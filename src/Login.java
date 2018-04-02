@@ -17,8 +17,8 @@ public class Login extends JFrame {
     JButton cust = new JButton("Customer Login");
     JButton create = new JButton("Create Account");
     JPanel panel = new JPanel();
-    JTextField txuser = new JTextField(45);
-    JPasswordField pass = new JPasswordField(45);
+    JTextField txuser = new JTextField();
+    JPasswordField pass = new JPasswordField();
 
     Login() {
         super("Login Autentification");
@@ -50,13 +50,13 @@ public class Login extends JFrame {
                 String s = null;
                 String s2 = null;
                 try {
-                    stmt = c.createStatement();
-                    ResultSet rs = stmt.executeQuery("select email, password from customers where email LIKE '%" + puname + "%'");
+                    PreparedStatement checkLogin = c.prepareStatement("select email, password from customers where email = ?");
+                    checkLogin.setString(1, puname);
+                    ResultSet rs = checkLogin.executeQuery();
                     s = rs.getString(1);
                     s2 = rs.getString(2);
                 } catch (SQLException e) {
                 }
-
                 if (puname.equals(s) && ppaswd.equals(s2)) {
                     CustomerView regFace = new CustomerView();
                     regFace.setVisible(true);
@@ -99,8 +99,7 @@ public class Login extends JFrame {
         });
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                String puname = txuser.getText();
-                String ppaswd = pass.getText();
+                NewCustomer regFace = new NewCustomer();
             }
         });
     }
