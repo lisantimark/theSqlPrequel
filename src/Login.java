@@ -3,16 +3,17 @@
  */
 
 import javax.swing.*;
-import java.awt.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
 import java.sql.*;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Vector;
 
 
 public class Login extends JFrame {
-    Connection c = App.SQLiteJDBC();
+
+    Connection c = SQLiteJDBC();
     JButton admin = new JButton("Administrator Login");
     JButton cust = new JButton("Customer Login");
     JButton create = new JButton("Create Account");
@@ -46,7 +47,6 @@ public class Login extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 String puname = txuser.getText();
                 String ppaswd = pass.getText();
-                Statement stmt = null;
                 String s = null;
                 String s2 = null;
                 try {
@@ -58,9 +58,14 @@ public class Login extends JFrame {
                 } catch (SQLException e) {
                 }
                 if (puname.equals(s) && ppaswd.equals(s2)) {
-                    CustomerView regFace = new CustomerView();
+                    CustomerView regFace = null;
+                    try {
+                        regFace = new CustomerView();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     regFace.setVisible(true);
-                    dispose();
+                    //dispose();
                 } else {
                     JOptionPane.showMessageDialog(null, "Wrong Password / Username");
                     txuser.setText("");
@@ -74,20 +79,25 @@ public class Login extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 String puname = txuser.getText();
                 String ppaswd = pass.getText();
-                Statement stmt = null;
                 String s = null;
                 String s2 = null;
                 try {
-                    stmt = c.createStatement();
-                    ResultSet rs = stmt.executeQuery("select email, password from admins where email LIKE '%" + puname + "%'");
+                    PreparedStatement checkLogin = c.prepareStatement("select email, password from admins where email = ?");
+                    checkLogin.setString(1, puname);
+                    ResultSet rs = checkLogin.executeQuery();
                     s = rs.getString(1);
                     s2 = rs.getString(2);
                 } catch (SQLException e) {
                 }
                 if(puname.equals(s) && ppaswd.equals(s2)) {
-                    AdministratorView regFace = new AdministratorView();
+                    AdministratorView regFace = null;
+                    try {
+                        regFace = new AdministratorView();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     regFace.setVisible(true);
-                    dispose();
+                    //dispose();
                 }
                 else {
                     JOptionPane.showMessageDialog(null,"Wrong Password / Username");
@@ -99,8 +109,47 @@ public class Login extends JFrame {
         });
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                NewCustomer regFace = new NewCustomer();
+                new NewCustomer();
             }
         });
+    }
+
+    public static Connection SQLiteJDBC() {
+        Connection c = null;
+        try {
+            Class.forName("org.sqlite.JDBC");
+            c = DriverManager.getConnection("jdbc:sqlite:C:/sqlite/prequelSql");
+        } catch ( Exception e ) {
+            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+            System.exit(0);
+        }
+        //System.out.println("Opened database successfully");
+        return c;
+    }
+
+    public static DefaultTableModel buildTableModel(ResultSet rs)
+            throws SQLException {
+
+        ResultSetMetaData metaData = rs.getMetaData();
+
+        Vector<String> columnNames = new Vector<String>();
+        int columnCount = metaData.getColumnCount();
+        for (int column = 1; column <= columnCount; column++) {
+            columnNames.add(metaData.getColumnName(column));
+        }
+
+        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+        while (rs.next()) {
+            Vector<Object> vector = new Vector<Object>();
+            for (int columnIndex = 1; columnIndex <= columnCount; columnIndex++) {
+                vector.add(rs.getObject(columnIndex));
+            }
+            data.add(vector);
+        }
+        return new DefaultTableModel(data, columnNames);
+    }
+
+    public static void main(String[] args) {
+        new Login();
     }
 }

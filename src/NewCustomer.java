@@ -6,21 +6,14 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.math.BigDecimal;
 import java.sql.*;
-import java.sql.Date;
-
-
-
 
 public class NewCustomer extends JFrame {
 
-    public static void main(String[] args) {
-        NewCustomer frameTable = new NewCustomer();
-    }
-
-    Connection c = App.SQLiteJDBC();
+    Connection c = Login.SQLiteJDBC();
     JPanel panel = new JPanel();
     JTextField txuser = new JTextField();
     JButton create = new JButton("Create Account");
+    JLabel done = new JLabel("Customer Account Added");
     JTextField pass = new JTextField();
     JTextField name = new JTextField();
     JTextField address = new JTextField();
@@ -45,6 +38,7 @@ public class NewCustomer extends JFrame {
         sc.setBounds(300, 275, 200, 20);
         zip.setBounds(300, 310, 200, 20);
         create.setBounds(75, 125, 200, 100);
+        done.setBounds(85, 200, 200, 100);
         panel.add(create);
         panel.add(txuser);
         panel.add(pass);
@@ -65,7 +59,7 @@ public class NewCustomer extends JFrame {
         sc.setText("Card security code");
         zip.setText("Zip code");
         getContentPane().add(panel);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         actionlogin();
     }
@@ -74,7 +68,6 @@ public class NewCustomer extends JFrame {
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
-
                     Statement newID = c.createStatement();
                     ResultSet rs = newID.executeQuery("select max(c_id) from customers");
                     int id = rs.getInt(1) + 1;
@@ -90,15 +83,13 @@ public class NewCustomer extends JFrame {
                     newCust.setBigDecimal(9, BigDecimal.valueOf(Long.parseLong(sc.getText())));
                     newCust.setBigDecimal(10, BigDecimal.valueOf(Long.parseLong(zip.getText())));
                     newCust.executeUpdate();
+                    dispose();
 
                 } catch (SQLException e) {
-
                     JOptionPane.showMessageDialog(null,"Invalid Entry / Please Re-enter Password / Check Fields");
                     pass.setText("");
                     pass.requestFocus();
                 }
-
-                System.out.println("New Customer Added");
             }
         });
     }
