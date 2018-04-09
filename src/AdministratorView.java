@@ -12,11 +12,15 @@ public class AdministratorView extends JFrame {
 
     Connection c = Login.SQLiteJDBC();
     Statement s = c.createStatement();
-    ResultSet rs = s.executeQuery("select * from customers_cv");
+    Statement s2 = c.createStatement();
+    ResultSet rs = s2.executeQuery("select * from customers_cv");
+    ResultSet rs2 = s.executeQuery("select * from developers");
     JLabel welcome = new JLabel("Testing");
     JPanel panel = new JPanel();
-    JTable table = new JTable(Login.buildTableModel(rs));
-    JScrollPane currentTable =  new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JTable buildView = new JTable(Login.buildTableModel(rs));
+    JTable developerTAble = new JTable(Login.buildTableModel(rs2));
+    JScrollPane viewTable =  new JScrollPane(buildView, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane devTable =  new JScrollPane(developerTAble, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
     AdministratorView() throws SQLException {
         super("Admin View");
@@ -24,9 +28,11 @@ public class AdministratorView extends JFrame {
         setLocation(0,0);
         panel.setLayout(null);
         welcome.setBounds(70,50,150,60);
-        currentTable.setBounds(100, 600, 700, 250);
+        viewTable.setBounds(350, 50, 500, 100);
+        devTable.setBounds(350, 200, 500, 100);
         panel.add(welcome);
-        panel.add(currentTable);
+        panel.add(viewTable);
+        panel.add(devTable);
         getContentPane().add(panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
