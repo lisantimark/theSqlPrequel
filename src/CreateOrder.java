@@ -11,7 +11,7 @@ import java.sql.Statement;
  * Created by owmer on 4/9/2018.
  */
 
-public class CreateOrder extends JFrame{
+public class CreateOrder extends JFrame{  //Separate Frame to Visually show whats being ordered and start and complete a transaction on the back end
 
     public static void main(String[] args) throws SQLException {
         new CreateOrder();
@@ -27,12 +27,12 @@ public class CreateOrder extends JFrame{
     String[] colHeadings = {"p_id", "format", "name", "category", "d_id", "version", "price", "rating", "released", "qoh"};
     DefaultTableModel model = new DefaultTableModel(30, colHeadings.length) ;
     JTable currentOrder = new JTable(model);
-    JScrollPane currentTable =  new JScrollPane(productsTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane currentTable =  new JScrollPane(productsTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //Table, subject to change due to drop down queries
     JScrollPane orderTable =  new JScrollPane(currentOrder, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    String[] menuOptions = { "All Products", "Developer", "Format", "Top Rating", "Price Low to High", "Price High to Low" };
+    String[] menuOptions = { "All Products", "Developer", "Format", "Top Rating", "Price Low to High", "Price High to Low" }; //Will be used to call function with parameter to run query to be used
     JComboBox searchMenu = new JComboBox(menuOptions);
 
-    CreateOrder() throws SQLException {
+    CreateOrder() throws SQLException { //Swing stuff
         super("Create Order");
         setSize(900, 900);
         setLocation(0, 0);
@@ -52,7 +52,7 @@ public class CreateOrder extends JFrame{
         setVisible(true);
     }
 
-    public void actionlogin() {
+    public void actionlogin() {  //This will initiate procedure / transaction and also change visual elements
         addItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
 

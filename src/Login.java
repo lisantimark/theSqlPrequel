@@ -127,7 +127,7 @@ public class Login extends JFrame {
         return c;
     }
 
-    public static DefaultTableModel buildTableModel(ResultSet rs)
+    public static DefaultTableModel buildTableModel(ResultSet rs) //This Function is called in all other classes, used for visually displaying tables
             throws SQLException {
 
         ResultSetMetaData metaData = rs.getMetaData();

@@ -12,7 +12,7 @@ import java.sql.Statement;
 
 public class CustomerView extends JFrame {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException { //Customer Class which will have customer views/ functions for ordering a product
         new CustomerView();
     }
 
@@ -24,7 +24,7 @@ public class CustomerView extends JFrame {
     JPanel panel = new JPanel();
     JTable productsTable = new JTable(Login.buildTableModel(rs));
     JTable buildView = new JTable(Login.buildTableModel(rs2));
-    JScrollPane currentTable =  new JScrollPane(productsTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane currentTable =  new JScrollPane(productsTable, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //Going to change tables displayed in this class
     JScrollPane viewTable =  new JScrollPane(buildView, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     String[] menuOptions = { "All Products", "Developer", "Format", "Top Rating", "Price Low to High", "Price High to Low" };
     JComboBox searchMenu = new JComboBox(menuOptions);

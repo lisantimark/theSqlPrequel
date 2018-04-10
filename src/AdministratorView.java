@@ -13,7 +13,7 @@ public class AdministratorView extends JFrame {
     }
 
     Connection c = Login.SQLiteJDBC();
-    Statement s = c.createStatement();
+    Statement s = c.createStatement(); //need to reduce redundancy in creating statements
     Statement s2 = c.createStatement();
     Statement s3 = c.createStatement();
     ResultSet rs = s2.executeQuery("select * from customers_cv");
@@ -26,7 +26,7 @@ public class AdministratorView extends JFrame {
     JTable buildView = new JTable(Login.buildTableModel(rs));
     JTable developerTAble = new JTable(Login.buildTableModel(rs2));
     JTable buildProducts = new JTable(Login.buildTableModel(rs3));
-    JScrollPane viewTable =  new JScrollPane(buildView, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane viewTable =  new JScrollPane(buildView, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //Tables for 'admin' views
     JScrollPane devTable =  new JScrollPane(developerTAble, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     JScrollPane productsTable =  new JScrollPane(buildProducts, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
@@ -54,7 +54,7 @@ public class AdministratorView extends JFrame {
     }
 
     public void actionAdmin() {
-        deleteCustomer.addActionListener(new ActionListener() {
+        deleteCustomer.addActionListener(new ActionListener() { //button uses selected cell to delete from SQL table at that selected value
             public void actionPerformed(ActionEvent ae) {
                 int row = buildView.getSelectedRow();
                 int column = buildView.getSelectedColumn();
@@ -67,11 +67,11 @@ public class AdministratorView extends JFrame {
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(null,"Select Email in Table");
                 }
-                viewTable.repaint();
+                viewTable.repaint(); //Can't get tables to repaint/ refresh need to fix
             }
         });
 
-        deleteDeveloper.addActionListener(new ActionListener() {
+        deleteDeveloper.addActionListener(new ActionListener() { //button uses selected cell to delete from SQL table at that selected value
             public void actionPerformed(ActionEvent ae) {
                 int row = developerTAble.getSelectedRow();
                 int column = developerTAble.getSelectedColumn();
@@ -84,11 +84,11 @@ public class AdministratorView extends JFrame {
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(null,"Select Email in Table");
                 }
-                developerTAble.repaint();
+                developerTAble.repaint(); //Can't get tables to repaint/ refresh need to fix
 
             }
         });
-        deleteProduct.addActionListener(new ActionListener() {
+        deleteProduct.addActionListener(new ActionListener() { //button uses selected cell to delete from SQL table at that selected value
             public void actionPerformed(ActionEvent ae) {
                 int row = buildProducts.getSelectedRow();
                 int column = buildProducts.getSelectedColumn();
@@ -100,7 +100,7 @@ public class AdministratorView extends JFrame {
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(null,"Select Email in Table");
                 }
-                buildProducts.repaint();
+                buildProducts.repaint(); //Can't get tables to repaint/ refresh need to fix
             }
         });
     }

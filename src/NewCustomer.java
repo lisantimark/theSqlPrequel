@@ -7,7 +7,7 @@ import java.awt.event.*;
 import java.math.BigDecimal;
 import java.sql.*;
 
-public class NewCustomer extends JFrame {
+public class NewCustomer extends JFrame { //Seperate class to take all necessary inputs to create new customer in table
 
     Connection c = Login.SQLiteJDBC();
     JPanel panel = new JPanel();
@@ -68,9 +68,9 @@ public class NewCustomer extends JFrame {
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
-                    Statement newID = c.createStatement();
+                    Statement newID = c.createStatement(); //prepared statement to iterate customer id's
                     ResultSet rs = newID.executeQuery("select max(c_id) from customers");
-                    int id = rs.getInt(1) + 1;
+                    int id = rs.getInt(1) + 1; //a query used to grab biggest id, then new entry will be incremented up 1
                     PreparedStatement newCust = c.prepareStatement("insert into customers values(?,?,?,?,?,?,?,?,?,?)");  //Prepared Statement for adding to customer table
                     newCust.setBigDecimal(1, BigDecimal.valueOf(id)); //Sets the string to a NUMERIC type
                     newCust.setString(2, txuser.getText());
@@ -79,7 +79,7 @@ public class NewCustomer extends JFrame {
                     newCust.setString(5, address.getText());
                     newCust.setBigDecimal(6, BigDecimal.valueOf(Long.parseLong(phone.getText())));
                     newCust.setBigDecimal(7, BigDecimal.valueOf(Long.parseLong(cc.getText())));
-                    newCust.setString(8, ce.getText());                                             //**Coudln't get setDate to work, maybe need to parse the string to get the date type to accept?
+                    newCust.setString(8, ce.getText());                                             //**Couldn't get setDate to work, maybe need to parse the string to get the date type to accept?
                     newCust.setBigDecimal(9, BigDecimal.valueOf(Long.parseLong(sc.getText())));
                     newCust.setBigDecimal(10, BigDecimal.valueOf(Long.parseLong(zip.getText())));
                     newCust.executeUpdate();
@@ -87,8 +87,8 @@ public class NewCustomer extends JFrame {
 
                 } catch (SQLException e) {
                     JOptionPane.showMessageDialog(null,"Invalid Entry / Please Re-enter Password / Check Fields");
-                    pass.setText("");
-                    pass.requestFocus();
+                    pass.setText(""); //if error in fields, delete password text, and set focus there to re-enter password
+                    pass.requestFocus(); //not really working
                 }
             }
         });
