@@ -5,6 +5,8 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.*;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,7 +15,7 @@ import java.util.Vector;
 
 public class Login extends JFrame {
 
-    Connection c = SQLiteJDBC();
+    static Connection c = JDBC();
     JButton admin = new JButton("Administrator Login");
     JButton cust = new JButton("Customer Login");
     JButton create = new JButton("Create Account");
@@ -114,17 +116,22 @@ public class Login extends JFrame {
         });
     }
 
-    public static Connection SQLiteJDBC() {
-        Connection c = null;
+    public static Connection JDBC() {
+        Connection conn = null;
         try {
-            Class.forName("org.sqlite.JDBC");
-            c = DriverManager.getConnection("jdbc:sqlite:C:/sqlite/prequelSql");
-        } catch ( Exception e ) {
-            System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-            System.exit(0);
+
+            System.out.println("Establishing connection with MySql server on localhost..");
+            conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/test"+"?noAccessToProcedureBodies=true"+"&useSSL=false"+"&user="+"test"+"&password="+"password");
+
+            System.out.println("Connection with MySql server on localhost connected...");
         }
-        //System.out.println("Opened database successfully");
-        return c;
+        catch (SQLException e) {
+            System.out.println("SQLException: " + e.getMessage());
+            System.out.println("SQLState:     " + e.getSQLState());
+            System.out.println("VendorError:  " + e.getErrorCode());
+        }
+        return conn;
     }
 
     public static DefaultTableModel buildTableModel(ResultSet rs) //This Function is called in all other classes, used for visually displaying tables
@@ -149,7 +156,7 @@ public class Login extends JFrame {
         return new DefaultTableModel(data, columnNames);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         new Login();
     }
 }

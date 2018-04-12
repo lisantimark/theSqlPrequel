@@ -9,7 +9,7 @@ import java.sql.*;
 
 public class NewCustomer extends JFrame { //Seperate class to take all necessary inputs to create new customer in table
 
-    Connection c = Login.SQLiteJDBC();
+    Connection c = Login.JDBC();
     JPanel panel = new JPanel();
     JTextField txuser = new JTextField();
     JButton create = new JButton("Create Account");

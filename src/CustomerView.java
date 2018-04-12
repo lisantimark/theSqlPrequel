@@ -4,19 +4,22 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 
 public class CustomerView extends JFrame {
 
     public static void main(String[] args) throws SQLException { //Customer Class which will have customer views/ functions for ordering a product
         new CustomerView();
+        CallableStatement cStmt = null;
+
     }
 
-    Connection c = Login.SQLiteJDBC();
+
+
+
+    Connection c = Login.JDBC();
+
     Statement s = c.createStatement();
     Statement s2 = c.createStatement();
     ResultSet rs = s.executeQuery("select * from products");
@@ -31,6 +34,7 @@ public class CustomerView extends JFrame {
 
     CustomerView() throws SQLException {
         super("Customer View");
+
         setSize(900, 900);
         setLocation(0, 0);
         panel.setLayout(null);

@@ -12,7 +12,7 @@ public class AdministratorView extends JFrame {
         new AdministratorView();
     }
 
-    Connection c = Login.SQLiteJDBC();
+    Connection c = Login.JDBC();
     Statement s = c.createStatement(); //need to reduce redundancy in creating statements
     Statement s2 = c.createStatement();
     Statement s3 = c.createStatement();

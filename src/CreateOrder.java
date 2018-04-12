@@ -2,10 +2,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.math.BigDecimal;
+import java.sql.*;
 
 /**
  * Created by owmer on 4/9/2018.
@@ -15,9 +13,21 @@ public class CreateOrder extends JFrame{  //Separate Frame to Visually show what
 
     public static void main(String[] args) throws SQLException {
         new CreateOrder();
-    }
+        try {
+            c.setAutoCommit(false);
+            CallableStatement cStmt = c.prepareCall("{call newOrder(?,?,?)}");
+            cStmt.setBigDecimal(1, BigDecimal.valueOf(7788));
+            cStmt.setBigDecimal(2, BigDecimal.valueOf(100003));
+            cStmt.setString(3, "2016-05-02");
+            cStmt.execute();
+            cStmt.close();
+        } catch(SQLException se){
+            c.rollback();
+            System.out.println("Transaction incomplete, rolled back");
+            }
+        }
 
-    Connection c = Login.SQLiteJDBC();
+    static Connection c = Login.JDBC();
     Statement s = c.createStatement();
     ResultSet rs = s.executeQuery("select * from products");
     JButton addItem = new JButton("Add Item");
@@ -50,12 +60,52 @@ public class CreateOrder extends JFrame{  //Separate Frame to Visually show what
         getContentPane().add(panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        actionOrder();
     }
 
-    public void actionlogin() {  //This will initiate procedure / transaction and also change visual elements
+    public void actionOrder() {  //This will initiate procedure / transaction and also change visual elements
         addItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-
+                try {
+                    CallableStatement oStmt = c.prepareCall("{call updateTrans(?,?,?,?)}");
+                    oStmt.setBigDecimal(1, BigDecimal.valueOf(7788));
+                    oStmt.setString(2, "3970755369");
+                    oStmt.setString(3,"Physical");
+                    oStmt.setBigDecimal(4, BigDecimal.valueOf(3));
+                    oStmt.execute();
+                    oStmt.close();
+                }
+                catch(SQLException se){
+                    // If there is any error.
+                    try {
+                        c.rollback();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        System.out.println("Transaction incomplete, rolled back");
+                    }
+                }
+            }
+        });
+        sendOrder.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent ae) {
+                try {
+                    c.commit();
+                    System.out.println("Transaction Complete");
+                }
+                catch(SQLException se){
+                    // If there is any error.
+                    try {
+                        c.rollback();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("Transaction incomplete, rolled back");
+                }
+                try {
+                    c.setAutoCommit(true);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
