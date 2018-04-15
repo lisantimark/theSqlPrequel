@@ -79,7 +79,7 @@ public class NewCustomer extends JFrame { //Seperate class to take all necessary
                     newCust.setString(5, address.getText());
                     newCust.setBigDecimal(6, BigDecimal.valueOf(Long.parseLong(phone.getText())));
                     newCust.setBigDecimal(7, BigDecimal.valueOf(Long.parseLong(cc.getText())));
-                    newCust.setString(8, ce.getText());                                             //**Couldn't get setDate to work, maybe need to parse the string to get the date type to accept?
+                    newCust.setDate(8, Date.valueOf(ce.getText()));                                             //**Couldn't get setDate to work, maybe need to parse the string to get the date type to accept?
                     newCust.setBigDecimal(9, BigDecimal.valueOf(Long.parseLong(sc.getText())));
                     newCust.setBigDecimal(10, BigDecimal.valueOf(Long.parseLong(zip.getText())));
                     newCust.executeUpdate();

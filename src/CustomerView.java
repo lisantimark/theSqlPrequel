@@ -21,9 +21,9 @@ public class CustomerView extends JFrame {
     Connection c = Login.JDBC();
 
     Statement s = c.createStatement();
-    Statement s2 = c.createStatement();
     ResultSet rs = s.executeQuery("select * from products");
-    ResultSet rs2 = s2.executeQuery("select * from admin_cv");
+    ResultSet rs2 = s.executeQuery("select * from admin_cv");
+    //ResultSet rs3 = s3.executeQuery("select * from admin_cv");
     JPanel panel = new JPanel();
     JTable productsTable = new JTable(Login.buildTableModel(rs));
     JTable buildView = new JTable(Login.buildTableModel(rs2));
