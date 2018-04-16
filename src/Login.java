@@ -6,15 +6,13 @@
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.*;
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
 
 
-public class Login extends JFrame {
+public class Login extends JFrame { //Login in class, creates view on login info
 
     static Connection c = JDBC();
     JButton admin = new JButton("Administrator Login");
@@ -45,68 +43,56 @@ public class Login extends JFrame {
         actionlogin();
     }
 
-    public void actionlogin() {
+    public void actionlogin() { //Customer Login Button
         cust.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String puname = txuser.getText();
                 String ppaswd = pass.getText();
-                String s = null;
-                String s2 = null;
                 try {
-                    PreparedStatement checkLogin = c.prepareStatement("select email, password from customers where email = ?");
-                    checkLogin.setString(1, puname);
-                    ResultSet rs = checkLogin.executeQuery();
-                    s = rs.getString(1);
-                    s2 = rs.getString(2);
-                } catch (SQLException e) {
-                }
-                if (puname.equals(s) && ppaswd.equals(s2)) {
-                    CustomerView regFace = null;
-                    try {
-                        regFace = new CustomerView();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                    CallableStatement getLogin = c.prepareCall("{? = call checkUser(?,?)}"); //Stored function returns 1 or 0
+                    getLogin.registerOutParameter(1, java.sql.Types.INTEGER);
+                    getLogin.setString(2, puname);
+                    getLogin.setString(3, ppaswd);
+                    getLogin.execute();
+                    int test = getLogin.getInt(1);
+                    if (test == 1) {                                            // 1 = pass allowing login
+                        System.out.println("Launch Customer View");
+                        //CustomerView regFace = new CustomerView();
+                        //regFace.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Wrong Password / Username");
+                        txuser.setText("");
+                        pass.setText("");
+                        txuser.requestFocus();
                     }
-                    regFace.setVisible(true);
-                    //dispose();
-                } else {
-                    JOptionPane.showMessageDialog(null, "Wrong Password / Username");
-                    txuser.setText("");
-                    pass.setText("");
-                    txuser.requestFocus();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
-
         });
         admin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String puname = txuser.getText();
                 String ppaswd = pass.getText();
-                String s = null;
-                String s2 = null;
                 try {
-                    PreparedStatement checkLogin = c.prepareStatement("select email, password from admins where email = ?");
-                    checkLogin.setString(1, puname);
-                    ResultSet rs = checkLogin.executeQuery();
-                    s = rs.getString(1);
-                    s2 = rs.getString(2);
-                } catch (SQLException e) {
-                }
-                if(puname.equals(s) && ppaswd.equals(s2)) {
-                    AdministratorView regFace = null;
-                    try {
-                        regFace = new AdministratorView();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
+                    CallableStatement getLogin = c.prepareCall("{? = call checkAdmin(?,?)}");  //Stored function returns 1 or 0
+                    getLogin.registerOutParameter(1, java.sql.Types.INTEGER);
+                    getLogin.setString(2, puname);
+                    getLogin.setString(3, ppaswd);
+                    getLogin.execute();
+                    int test = getLogin.getInt(1);
+                    if (test == 1) {                                                        // 1 = pass allowing login
+                        System.out.println("Launch Admin View");
+                        //AdministratorView regFace = new AdministratorView();
+                        //regFace.setVisible(true);
+                    } else {
+                        JOptionPane.showMessageDialog(null, "Wrong Password / Username");
+                        txuser.setText("");
+                        pass.setText("");
+                        txuser.requestFocus();
                     }
-                    regFace.setVisible(true);
-                    //dispose();
-                }
-                else {
-                    JOptionPane.showMessageDialog(null,"Wrong Password / Username");
-                    txuser.setText("");
-                    pass.setText("");
-                    txuser.requestFocus();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         });
@@ -117,7 +103,7 @@ public class Login extends JFrame {
         });
     }
 
-    public static Connection JDBC() {
+    public static Connection JDBC() { //This Function is called in all other classes, creates connection to local mySql server this
         Connection conn = null;
         try {
 
