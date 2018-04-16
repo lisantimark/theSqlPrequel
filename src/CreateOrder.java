@@ -18,14 +18,13 @@ public class CreateOrder extends JFrame{
      public static void main(String[] args) throws SQLException {
          new CreateOrder();
          try {
-             c.setAutoCommit(false);  //Initiates Transaction
+             c.setAutoCommit(false); //Initiates Transaction
              //get customer id
              CallableStatement cStmt = c.prepareCall("{call newOrder(?,?)}"); //This statement creates a new insert to order table upon class starting
               //This is initiated at class running but not committed unless button send order pushed
-             cStmt.setBigDecimal(1, BigDecimal.valueOf(100003)); //o_id needs to be created here before any odetails with same id can be created
+             cStmt.setInt(1, 100003); //o_id needs to be created here before any odetails with same id can be created
              cStmt.setString(2, "2016-05-02");
              cStmt.execute();
-
          } catch (SQLException se) {
              c.rollback();
              System.out.println("Transaction incomplete, rolled back");
@@ -93,11 +92,18 @@ public class CreateOrder extends JFrame{
                     //Order ID
 
                     //Product ID and Format
-                    CallableStatement oStmt = c.prepareCall("{call updateTrans(?,?,?)}"); //This calls a stored procedure that inserts into odetails
-                    oStmt.setString(1, (String) row[0]);
-                    oStmt.setString(2, (String) row[3]);
-                    oStmt.setBigDecimal(3, BigDecimal.valueOf(Long.parseLong(qty))); //This qty is determined by popup box
-                    oStmt.execute();
+                    Statement newID = c.createStatement(); //prepared statement to iterate customer id's
+                    ResultSet rs = newID.executeQuery("select max(o_id) from orders");
+                    while(rs.next()){
+                        int id = rs.getInt(1);
+                        System.out.println(id);
+                        CallableStatement oStmt = c.prepareCall("{call updateTrans(?,?,?,?)}"); //This calls a stored procedure that inserts into odetails
+                        oStmt.setInt(1, id);
+                        oStmt.setString(2, (String) row[0]);
+                        oStmt.setString(3, (String) row[3]);
+                        oStmt.setBigDecimal(4, BigDecimal.valueOf(Long.parseLong(qty))); //This qty is determined by popup box
+                        oStmt.execute();
+                    }
                 }
                 catch(SQLException se){
                     // If there is any error.
@@ -117,6 +123,7 @@ public class CreateOrder extends JFrame{
                     c.commit();
                     c.setAutoCommit(true);
                     System.out.println("Transaction Complete");
+                    dispose();
                 }
                 catch(SQLException se){
                     // If there is any error.

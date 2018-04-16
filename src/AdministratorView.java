@@ -17,7 +17,7 @@ public class AdministratorView extends JFrame {
     }
 
     Connection c = Login.JDBC();
-    BigDecimal o_id;
+    int o_id;
     Statement s = c.createStatement();
     Statement s1 = c.createStatement(); //need to reduce redundancy in creating statements
     Statement s2 = c.createStatement();
@@ -61,7 +61,7 @@ public class AdministratorView extends JFrame {
         panel.add(productsTable);
         panel.add(deleteCustomer);
         panel.add(deleteDeveloper);
-        panel.add(sendOrder);
+        //panel.add(sendOrder);
         getContentPane().add(panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -107,13 +107,13 @@ public class AdministratorView extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 int row = buildOrders.getSelectedRow();
                 int column = buildOrders.getSelectedColumn();
-                BigDecimal name = (BigDecimal) buildOrders.getValueAt(row, column);
+                int name = (int) buildOrders.getValueAt(row, column);
                 o_id = name;
 
                 try {
                     PreparedStatement sendOrder = c.prepareStatement("UPDATE orders SET shipped = ? WHERE o_id = ?");  //Prepared Statement for adding to customer table
                     sendOrder.setString(1, "2018-14-04");
-                    sendOrder.setBigDecimal(2, name);
+                    sendOrder.setInt(2, name);
                     sendOrder.executeUpdate();
                     dispose();
                     new AdministratorView();
@@ -127,14 +127,16 @@ public class AdministratorView extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 int row = buildOrders.getSelectedRow();
                 int column = buildOrders.getSelectedColumn();
-                BigDecimal name = (BigDecimal) buildOrders.getValueAt(row, column);
+                int name = (int) buildOrders.getValueAt(row, column);
                 o_id = name;
                 try {
-                    Statement s4 = c.createStatement();
-                    ResultSet rs5 = s4.executeQuery("select * from odetails where o_id = '"+ o_id +"'");
+                    PreparedStatement viewOrder = c.prepareStatement("{call viewOrder(?)}");
+                    viewOrder.setInt(1,o_id);
+                    viewOrder.execute();
+                    ResultSet rs5 = viewOrder.getResultSet();
                     JTable buildOdetails = new JTable(Login.buildTableModel(rs5));
                     JScrollPane odetailsTable =  new JScrollPane(buildOdetails, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-                    odetailsTable.setBounds(350, 365, 500, 100);
+                    odetailsTable.setBounds(150, 365, 700, 100);
                     panel.add(odetailsTable);
                 } catch (SQLException e) {
                     e.printStackTrace();

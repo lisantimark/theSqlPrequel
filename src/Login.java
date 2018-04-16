@@ -83,8 +83,8 @@ public class Login extends JFrame { //Login in class, creates view on login info
                     int test = getLogin.getInt(1);
                     if (test == 1) {                                                        // 1 = pass allowing login
                         System.out.println("Launch Admin View");
-                        //AdministratorView regFace = new AdministratorView();
-                        //regFace.setVisible(true);
+                        AdministratorView regFace = new AdministratorView();
+                        regFace.setVisible(true);
                     } else {
                         JOptionPane.showMessageDialog(null, "Wrong Password / Username");
                         txuser.setText("");
