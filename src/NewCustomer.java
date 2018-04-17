@@ -68,20 +68,16 @@ public class NewCustomer extends JFrame { //Seperate class to take all necessary
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
-                    Statement newID = c.createStatement(); //prepared statement to iterate customer id's
-                    ResultSet rs = newID.executeQuery("select max(c_id) from customers");
-                    int id = rs.getInt(1) + 1; //a query used to grab biggest id, then new entry will be incremented up 1
                     PreparedStatement newCust = c.prepareStatement("insert into customers values(?,?,?,?,?,?,?,?,?,?)");  //Prepared Statement for adding to customer table
-                    newCust.setBigDecimal(1, BigDecimal.valueOf(id)); //Sets the string to a NUMERIC type
-                    newCust.setString(2, txuser.getText());
-                    newCust.setString(3, pass.getText());
-                    newCust.setString(4, name.getText());
-                    newCust.setString(5, address.getText());
-                    newCust.setBigDecimal(6, BigDecimal.valueOf(Long.parseLong(phone.getText())));
-                    newCust.setBigDecimal(7, BigDecimal.valueOf(Long.parseLong(cc.getText())));
-                    newCust.setDate(8, Date.valueOf(ce.getText()));                                             //**Couldn't get setDate to work, maybe need to parse the string to get the date type to accept?
-                    newCust.setBigDecimal(9, BigDecimal.valueOf(Long.parseLong(sc.getText())));
-                    newCust.setBigDecimal(10, BigDecimal.valueOf(Long.parseLong(zip.getText())));
+                    newCust.setString(1, txuser.getText());
+                    newCust.setString(2, pass.getText());
+                    newCust.setString(3, name.getText());
+                    newCust.setString(4, address.getText());
+                    newCust.setBigDecimal(5, BigDecimal.valueOf(Long.parseLong(phone.getText())));
+                    newCust.setBigDecimal(6, BigDecimal.valueOf(Long.parseLong(cc.getText())));
+                    newCust.setDate(7, Date.valueOf(ce.getText()));                                             //**Couldn't get setDate to work, maybe need to parse the string to get the date type to accept?
+                    newCust.setBigDecimal(8, BigDecimal.valueOf(Long.parseLong(sc.getText())));
+                    newCust.setBigDecimal(9, BigDecimal.valueOf(Long.parseLong(zip.getText())));
                     newCust.executeUpdate();
                     dispose();
 

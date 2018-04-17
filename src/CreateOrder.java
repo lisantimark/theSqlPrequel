@@ -16,23 +16,27 @@ public class CreateOrder extends JFrame{
                                         //Transaction is rolled back until 'send order' is clicked
 
      public static void main(String[] args) throws SQLException {
+
          new CreateOrder();
+         CustomerView.c.setAutoCommit(false);
          try {
-             c.setAutoCommit(false); //Initiates Transaction
+              //Initiates Transaction
+
              //get customer id
-             CallableStatement cStmt = c.prepareCall("{call newOrder(?,?)}"); //This statement creates a new insert to order table upon class starting
+             CallableStatement cStmt = CustomerView.c.prepareCall("{call newOrder(?,?)}"); //This statement creates a new insert to order table upon class starting
               //This is initiated at class running but not committed unless button send order pushed
              cStmt.setInt(1, 100003); //o_id needs to be created here before any odetails with same id can be created
              cStmt.setString(2, "2016-05-02");
              cStmt.execute();
          } catch (SQLException se) {
-             c.rollback();
+             CustomerView.c.rollback();
              System.out.println("Transaction incomplete, rolled back");
          }
+
      }
 
-    static Connection c = Login.JDBC();
-    Statement s = c.createStatement();
+    //static Connection c = Login.JDBC();
+    Statement s = CustomerView.c.createStatement();
     ResultSet rs = s.executeQuery("select * from products");
     JButton addItem = new JButton("Add Item");
     JButton sendOrder = new JButton("Send Order");
@@ -92,12 +96,12 @@ public class CreateOrder extends JFrame{
                     //Order ID
 
                     //Product ID and Format
-                    Statement newID = c.createStatement(); //prepared statement to iterate customer id's
+                    Statement newID = CustomerView.c.createStatement(); //prepared statement to iterate customer id's
                     ResultSet rs = newID.executeQuery("select max(o_id) from orders");
                     while(rs.next()){
                         int id = rs.getInt(1);
                         System.out.println(id);
-                        CallableStatement oStmt = c.prepareCall("{call updateTrans(?,?,?,?)}"); //This calls a stored procedure that inserts into odetails
+                        CallableStatement oStmt = CustomerView.c.prepareCall("{call updateTrans(?,?,?,?)}"); //This calls a stored procedure that inserts into odetails
                         oStmt.setInt(1, id);
                         oStmt.setString(2, (String) row[0]);
                         oStmt.setString(3, (String) row[3]);
@@ -108,7 +112,7 @@ public class CreateOrder extends JFrame{
                 catch(SQLException se){
                     // If there is any error.
                     try {
-                        c.rollback();
+                        CustomerView.c.rollback();
                     } catch (SQLException e) {
                         e.printStackTrace();
                         System.out.println("Transaction incomplete, rolled back");
@@ -120,15 +124,15 @@ public class CreateOrder extends JFrame{
         sendOrder.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
-                    c.commit();
-                    c.setAutoCommit(true);
+                    CustomerView.c.commit();
                     System.out.println("Transaction Complete");
-                    dispose();
+                    CustomerView.c.setAutoCommit(true);
+
                 }
                 catch(SQLException se){
                     // If there is any error.
                     try {
-                        c.rollback();
+                        CustomerView.c.rollback();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }

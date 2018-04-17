@@ -22,24 +22,41 @@ public class AdministratorView extends JFrame {
     Statement s1 = c.createStatement(); //need to reduce redundancy in creating statements
     Statement s2 = c.createStatement();
     Statement s3 = c.createStatement();
+    Statement s4 = c.createStatement();
+    Statement s5 = c.createStatement();
     ResultSet rs = s.executeQuery("select * from customers_cv");
+    ResultSet rs1 = s2.executeQuery("select products.pname Product_name, sum(qty) as Total_Sold, price from products, odetails \n" +
+            "where products.p_id=odetails.p_id \n" +
+            "group by pname \n" +
+            "order by sum(qty) \n" +
+            "desc limit 3;");
     ResultSet rs2 = s1.executeQuery("select * from developers");
-    ResultSet rs3 = s2.executeQuery("select * from products");
     ResultSet rs4 = s3.executeQuery("select * from orders");
+    ResultSet rs5 = s4.executeQuery("select name, orders.o_id, orders.received \n" +
+            "from customers join orders on customers.c_id = orders.c_id \n" +
+            "where shipped is null;");
+    ResultSet rs6 = s5.executeQuery("select o_id, shipped  from orders where year(received) < year(curdate()) and shipped is not null");
     JButton deleteCustomer = new JButton("Delete Customer");
     JButton deleteDeveloper = new JButton("Delete Developer");
     JButton sendOrder = new JButton("Send Order");
     JButton viewOdetails = new JButton("View Details");
+    JButton refresh = new JButton("Refresh");
+    JLabel label = new JLabel("Top three products sold");
+    JLabel label2 = new JLabel("Orders not yet sent");
+    JLabel label3 = new JLabel("Old finished orders");
     JPanel panel = new JPanel();
     JTable buildView = new JTable(Login.buildTableModel(rs));
     JTable developerTAble = new JTable(Login.buildTableModel(rs2));
-    JTable buildProducts = new JTable(Login.buildTableModel(rs3));
     JTable buildOrders = new JTable(Login.buildTableModel(rs4));
+    JTable topThree = new JTable(Login.buildTableModel(rs1));
+    JTable outstandOrder = new JTable(Login.buildTableModel(rs5));
+    JTable oldOrders = new JTable(Login.buildTableModel(rs6));
     JScrollPane viewTable =  new JScrollPane(buildView, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED); //Tables for 'admin' views
     JScrollPane devTable =  new JScrollPane(developerTAble, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-    JScrollPane productsTable =  new JScrollPane(buildProducts, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     JScrollPane ordersTable =  new JScrollPane(buildOrders, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
+    JScrollPane topThreeTable =  new JScrollPane(topThree, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane outOrder =  new JScrollPane(outstandOrder, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    JScrollPane yearOldOrders =  new JScrollPane(oldOrders, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
     AdministratorView() throws SQLException {
         super("Admin View");
@@ -49,19 +66,31 @@ public class AdministratorView extends JFrame {
         viewTable.setBounds(350, 50, 500, 100);
         devTable.setBounds(350, 155, 500, 100);
         ordersTable.setBounds(350, 260, 500, 100);
-        productsTable.setBounds(100, 600, 700, 200);
+        topThreeTable.setBounds(75, 600, 200, 200);
+        outOrder.setBounds(300, 600, 300, 200);
+        yearOldOrders.setBounds(625, 600, 200, 200);
         deleteCustomer.setBounds(100, 75, 200, 25);
         deleteDeveloper.setBounds(100, 180, 200, 25);
-        sendOrder.setBounds(100, 400, 200, 25);
+        sendOrder.setBounds(100, 325, 200, 25);
         viewOdetails.setBounds(100,285,200,25);
+        label.setBounds(110, 525, 200, 100);
+        label2.setBounds(390, 525, 300, 100);
+        label3.setBounds(670, 525, 300, 100);
+        refresh.setBounds(15, 15, 100, 25);
         panel.add(viewOdetails);
         panel.add(viewTable);
         panel.add(devTable);
         panel.add(ordersTable);
-        panel.add(productsTable);
         panel.add(deleteCustomer);
         panel.add(deleteDeveloper);
-        //panel.add(sendOrder);
+        panel.add(sendOrder);
+        panel.add(outOrder);
+        panel.add(topThreeTable);
+        panel.add(yearOldOrders);
+        panel.add(label);
+        panel.add(label2);
+        panel.add(label3);
+        panel.add(refresh);
         getContentPane().add(panel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -106,14 +135,12 @@ public class AdministratorView extends JFrame {
         sendOrder.addActionListener(new ActionListener() { //button uses selected cell to delete from SQL table at that selected value
             public void actionPerformed(ActionEvent ae) {
                 int row = buildOrders.getSelectedRow();
-                int column = buildOrders.getSelectedColumn();
-                int name = (int) buildOrders.getValueAt(row, column);
+                int name = (int) buildOrders.getValueAt(row, 0);
                 o_id = name;
-
+                System.out.println(o_id);
                 try {
-                    PreparedStatement sendOrder = c.prepareStatement("UPDATE orders SET shipped = ? WHERE o_id = ?");  //Prepared Statement for adding to customer table
-                    sendOrder.setString(1, "2018-14-04");
-                    sendOrder.setInt(2, name);
+                    PreparedStatement sendOrder = c.prepareStatement("{call sendOrder(?)}");  //Prepared Statement for adding to customer table
+                    sendOrder.setInt(1, o_id);
                     sendOrder.executeUpdate();
                     dispose();
                     new AdministratorView();
@@ -123,12 +150,14 @@ public class AdministratorView extends JFrame {
                 }
             }
         });
+
         viewOdetails.addActionListener(new ActionListener() { //button uses selected cell to delete from SQL table at that selected value
             public void actionPerformed(ActionEvent ae) {
+
                 int row = buildOrders.getSelectedRow();
-                int column = buildOrders.getSelectedColumn();
-                int name = (int) buildOrders.getValueAt(row, column);
+                int name = (int) buildOrders.getValueAt(row, 0);
                 o_id = name;
+                System.out.println(name);
                 try {
                     PreparedStatement viewOrder = c.prepareStatement("{call viewOrder(?)}");
                     viewOrder.setInt(1,o_id);
@@ -138,6 +167,16 @@ public class AdministratorView extends JFrame {
                     JScrollPane odetailsTable =  new JScrollPane(buildOdetails, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     odetailsTable.setBounds(150, 365, 700, 100);
                     panel.add(odetailsTable);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        refresh.addActionListener(new ActionListener() { //button uses selected cell to delete from SQL table at that selected value
+            public void actionPerformed(ActionEvent ae) {
+                dispose();
+                try {
+                    new AdministratorView();
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }

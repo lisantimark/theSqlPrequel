@@ -14,7 +14,7 @@ import java.util.Vector;
 
 public class Login extends JFrame { //Login in class, creates view on login info
 
-    static Connection c = JDBC();
+    Connection c = JDBC();
     JButton admin = new JButton("Administrator Login");
     JButton cust = new JButton("Customer Login");
     JButton create = new JButton("Create Account");
@@ -57,8 +57,8 @@ public class Login extends JFrame { //Login in class, creates view on login info
                     int test = getLogin.getInt(1);
                     if (test == 1) {                                            // 1 = pass allowing login
                         System.out.println("Launch Customer View");
-                        //CustomerView regFace = new CustomerView();
-                        //regFace.setVisible(true);
+                        CustomerView regFace = new CustomerView();
+                        regFace.setVisible(true);
                     } else {
                         JOptionPane.showMessageDialog(null, "Wrong Password / Username");
                         txuser.setText("");
