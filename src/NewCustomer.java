@@ -68,17 +68,17 @@ public class NewCustomer extends JFrame { //Seperate class to take all necessary
         create.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 try {
-                    PreparedStatement newCust = c.prepareStatement("insert into customers values(?,?,?,?,?,?,?,?,?,?)");  //Prepared Statement for adding to customer table
+                    CallableStatement newCust = c.prepareCall("{call newAccount(?,?,?,?,?,?,?,?,?)}");  //Prepared Statement for adding to customer table
                     newCust.setString(1, txuser.getText());
                     newCust.setString(2, pass.getText());
                     newCust.setString(3, name.getText());
                     newCust.setString(4, address.getText());
                     newCust.setBigDecimal(5, BigDecimal.valueOf(Long.parseLong(phone.getText())));
                     newCust.setBigDecimal(6, BigDecimal.valueOf(Long.parseLong(cc.getText())));
-                    newCust.setDate(7, Date.valueOf(ce.getText()));                                             //**Couldn't get setDate to work, maybe need to parse the string to get the date type to accept?
+                    newCust.setString(7, ce.getText());                                             //**Couldn't get setDate to work, maybe need to parse the string to get the date type to accept?
                     newCust.setBigDecimal(8, BigDecimal.valueOf(Long.parseLong(sc.getText())));
                     newCust.setBigDecimal(9, BigDecimal.valueOf(Long.parseLong(zip.getText())));
-                    newCust.executeUpdate();
+                    newCust.execute();
                     dispose();
 
                 } catch (SQLException e) {

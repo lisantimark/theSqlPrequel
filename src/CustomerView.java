@@ -18,7 +18,7 @@ public class CustomerView extends JFrame {
     public static void main(String[] args) throws SQLException { //Customer Class which will have customer views/ functions for ordering a product
         new CustomerView();
     }
-    
+
     Connection c = Login.JDBC();
     String customer_id = Login.puname;
     Statement s = c.createStatement();
@@ -212,7 +212,7 @@ public class CustomerView extends JFrame {
                             row[9] = qty;
                             model2.addRow(row);
                         }
-                        //Order ID
+                        //Order ID created with AUTO_INCREMENT
 
                         //Product ID and Format
                         Statement newID = c.createStatement(); //prepared statement to iterate customer id's
