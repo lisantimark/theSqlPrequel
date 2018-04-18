@@ -109,7 +109,7 @@ public class CustomerView extends JFrame {
                         CallableStatement cStmt = c.prepareCall("{call newOrder(?,?)}"); //This statement creates a new insert to order table upon class starting
                                                                                     //This is initiated at class running but not committed unless button send order pushed
                         cStmt.setInt(1, c_id);                        //o_id needs to be created here before any odetails with same id can be created
-                        cStmt.setString(2, "2016-05-02");
+                        cStmt.setString(2, "2018-04-25");
                         cStmt.execute();
                     } catch (SQLException se) {
                         try {
@@ -126,7 +126,7 @@ public class CustomerView extends JFrame {
             public void actionPerformed(ActionEvent ae) {
                 try {
                     PreparedStatement buildHistory = c.prepareStatement("{call compileHistory(?)}");
-                    buildHistory.setInt(1,100001);
+                    buildHistory.setInt(1,c_id);
                     buildHistory.execute();
                     ResultSet rs5 = buildHistory.getResultSet();
                     JTable history = new JTable(Login.buildTableModel(rs5));
