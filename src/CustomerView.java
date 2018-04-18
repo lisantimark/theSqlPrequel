@@ -13,14 +13,17 @@ import java.sql.*;
 public class CustomerView extends JFrame {
 
 
+
+
     public static void main(String[] args) throws SQLException { //Customer Class which will have customer views/ functions for ordering a product
         new CustomerView();
     }
-
-
+    
     Connection c = Login.JDBC();
-    int c_id = 100001;
+    String customer_id = Login.puname;
     Statement s = c.createStatement();
+    ResultSet id = s.executeQuery("select c_id from customers where email ='"+ customer_id +"'");
+    int c_id = 0;
     Statement s2 = c.createStatement();
     ResultSet rs2 = s2.executeQuery("select * from admin_cv");
     JButton refresh = new JButton("Refresh");
@@ -46,12 +49,15 @@ public class CustomerView extends JFrame {
         setSize(900, 900);
         setLocation(0, 0);
         panel.setLayout(null);
+        if (id.next()) {
+            c_id = id.getInt(1);
+            System.out.println(c_id);
+        }
         PreparedStatement acc = c.prepareStatement("select email, c_card, address, zipcode from customers where c_id = ?");
         acc.setInt(1, c_id);
         ResultSet rs3 = acc.executeQuery();
         JTable buildAccount = new JTable(Login.buildTableModel(rs3));
         JScrollPane accountInfo = new JScrollPane(buildAccount, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
         changePass.setBounds(515, 225, 150, 25);
         viewTable.setBounds(350, 50, 500, 100);
         AccountInfo.setBounds(550, 150, 500, 100);
@@ -81,11 +87,11 @@ public class CustomerView extends JFrame {
         changePass.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
                 String password = (String) JOptionPane.showInputDialog(panel, "Enter New Password", "Update Password", JOptionPane.PLAIN_MESSAGE, null, null, null);
-                PreparedStatement updatePass = null;  //Prepared Statement for adding to customer table
+                PreparedStatement updatePass;                //Prepared Statement for adding to customer table
                 try {
                     updatePass = c.prepareStatement("update customers set password = ? where c_id = ?");
                     updatePass.setString(1,password);
-                    updatePass.setInt(2, 100001);
+                    updatePass.setInt(2, c_id);
                     updatePass.executeUpdate();
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -97,12 +103,12 @@ public class CustomerView extends JFrame {
 
                     try {
                         new CreateOrder();
-                        //Initiates Transaction
-                        //c.setAutoCommit(false);
-                        //get customer id
+                                                                                    //Initiates Transaction
+                                                                                    //c.setAutoCommit(false);
+                                                                                    //get customer id
                         CallableStatement cStmt = c.prepareCall("{call newOrder(?,?)}"); //This statement creates a new insert to order table upon class starting
-                        //This is initiated at class running but not committed unless button send order pushed
-                        cStmt.setInt(1, 100003); //o_id needs to be created here before any odetails with same id can be created
+                                                                                    //This is initiated at class running but not committed unless button send order pushed
+                        cStmt.setInt(1, c_id);                        //o_id needs to be created here before any odetails with same id can be created
                         cStmt.setString(2, "2016-05-02");
                         cStmt.execute();
                     } catch (SQLException se) {
@@ -145,12 +151,9 @@ public class CustomerView extends JFrame {
    }
 
     public class CreateOrder extends JFrame{
-        //Ordering menu, visually shows what products
-        //Begins transaction inserts values to orders, then odetails
-        //Transaction is rolled back until 'send order' is clicked
-
-
-
+                                                        //Ordering menu, visually shows what products
+                                                        //Begins transaction inserts values to orders, then odetails
+                                                        // Transaction is rolled back until 'send order' is clicked
         Statement s = c.createStatement();
         ResultSet rs = s.executeQuery("select * from products");
         JButton addItem = new JButton("Add Item");
@@ -183,7 +186,7 @@ public class CustomerView extends JFrame {
             getContentPane().add(panel);
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setVisible(true);
-            c.setAutoCommit(false);
+            c.setAutoCommit(false);                                                                         //MOVED SET AUTOCOMMIT HERE
             actionOrder();
         }
 
@@ -243,7 +246,7 @@ public class CustomerView extends JFrame {
                         c.commit();
                         System.out.println("Transaction Complete");
                         c.setAutoCommit(true);
-
+                        dispose();
                     }
                     catch(SQLException se){
                         // If there is any error.

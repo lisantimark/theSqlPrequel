@@ -92,7 +92,7 @@ public class AdministratorView extends JFrame {
         panel.add(label3);
         panel.add(refresh);
         getContentPane().add(panel);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setVisible(true);
         actionAdmin();
     }

@@ -21,6 +21,7 @@ public class Login extends JFrame { //Login in class, creates view on login info
     JPanel panel = new JPanel();
     JTextField txuser = new JTextField();
     JPasswordField pass = new JPasswordField();
+    public static String puname;
 
     Login() {
         super("Login Autentification");
@@ -46,7 +47,7 @@ public class Login extends JFrame { //Login in class, creates view on login info
     public void actionlogin() { //Customer Login Button
         cust.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                String puname = txuser.getText();
+                puname = txuser.getText();
                 String ppaswd = pass.getText();
                 try {
                     CallableStatement getLogin = c.prepareCall("{? = call checkUser(?,?)}"); //Stored function returns 1 or 0
@@ -72,7 +73,7 @@ public class Login extends JFrame { //Login in class, creates view on login info
         });
         admin.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent ae) {
-                String puname = txuser.getText();
+                puname = txuser.getText();
                 String ppaswd = pass.getText();
                 try {
                     CallableStatement getLogin = c.prepareCall("{? = call checkAdmin(?,?)}");  //Stored function returns 1 or 0
